@@ -90,7 +90,8 @@
 	      actstatus:{
 	      	parametValue:'',
 	      	id:0
-	      }
+	      },
+	      loadTF:false
         }
       },
       components:{
@@ -99,14 +100,20 @@
       created(){
       	var that =this;
       	this.loadTF=true;
-      	this.$store.dispatch("Getcardchargequest",this.pagedata).then(()=>{
-      		console.log(this.$store.state.app.cardchargedata)
-      		that.cardchargelist=this.$store.state.app.cardchargedata.list;
-      		that.actstatus.parametValue= this.$store.state.app.cardchargedata.list[0].parametValue;
-            that.total=this.$store.state.app.cardchargedata.total;
-	      	that.pagedata.pageNum=this.$store.state.app.cardchargedata.pageNum;
-	      	that.pagedata.pagesize=this.$store.state.app.cardchargedata.pageSize; 
-	      	that.loadTF=false;
+      	this.$store.dispatch("Getcardchargequest",this.pagedata).then((res)=>{
+      		if(res.data.ok==true){
+      			
+      			if(this.$store.state.app.cardchargedata.list.length==0){ 
+      			}else{
+		      		that.cardchargelist=this.$store.state.app.cardchargedata.list;
+		      		that.actstatus.parametValue= this.$store.state.app.cardchargedata.list[0].parametValue;
+		            that.total=this.$store.state.app.cardchargedata.total;
+			      	that.pagedata.pageNum=this.$store.state.app.cardchargedata.pageNum;
+			      	that.pagedata.pagesize=this.$store.state.app.cardchargedata.pageSize;       				
+      			}
+      		that.loadTF=false;	
+      		}
+
       	})
       },
       methods: {
@@ -114,12 +121,15 @@
 	         var that=this;
 	         this.loadTF=true;
 	         this.pagedata.pagesize=val;
-	         this.$store.dispatch("Getcardchargequest",this.pagedata).then(()=>{
-	        	that.total=this.$store.state.app.cardchargedata.total;
-	      		that.pagedata.pageNum=this.$store.state.app.cardchargedata.pageNum;
-	      		that.pagedata.pagesize=this.$store.state.app.cardchargedata.pageSize;
-	      		that.cardchargelist=this.$store.state.app.cardchargedata.list;
-	      		that.loadTF=false;
+	         this.$store.dispatch("Getcardchargequest",this.pagedata).then((res)=>{
+	         	if(res.data.ok==true){
+		        	that.total=this.$store.state.app.cardchargedata.total;
+		      		that.pagedata.pageNum=this.$store.state.app.cardchargedata.pageNum;
+		      		that.pagedata.pagesize=this.$store.state.app.cardchargedata.pageSize;
+		      		that.cardchargelist=this.$store.state.app.cardchargedata.list;
+		      		that.loadTF=false;	         		
+	         	}
+
 	        })
           console.log('每页 '+this.pagedata.pagesize+' 条');
         },
@@ -128,15 +138,19 @@
 	        this.loadTF=true;
 	        this.pagedata.pageNum=val;
 	        this.$store.dispatch("Getcardchargequest",this.pagedata).then((res)=>{
-	        	if(res.data.data.list.length==0){
-	        		console.log("23333")
-	        	}else{
-	        	that.total=this.$store.state.app.cardchargedata.total;
-	      		that.pagedata.pageNum=this.$store.state.app.cardchargedata.pageNum;
-	      		that.pagedata.pagesize=this.$store.state.app.cardchargedata.pageSize;
-	      		that.cardchargelist=this.$store.state.app.cardchargedata.list;
+	        	if(res.data.ok==true){
+		        	if(res.data.data.list.length==0){
+		        		console.log("23333")
+		        	}else{
+		        	that.total=this.$store.state.app.cardchargedata.total;
+		      		that.pagedata.pageNum=this.$store.state.app.cardchargedata.pageNum;
+		      		that.pagedata.pagesize=this.$store.state.app.cardchargedata.pageSize;
+		      		that.cardchargelist=this.$store.state.app.cardchargedata.list;
+		      		
+	      		}	
 	      		that.loadTF=false;
-	      		}
+	        	}
+
 	        })
           console.log(`当前页: ${val}`);
         },        

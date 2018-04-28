@@ -35,14 +35,18 @@
 			<div class="left">商家LOGO：</div>
 			<div class="right"><el-upload
 			  class="upload-demo"
-			  action="https://jsonplaceholder.typicode.com/posts/"
+			  action="http://192.168.1.115:9104/xdjCore/xdjMerchantsAdmin/admin/file/upload"
 			  :on-preview="handlePreview"
 			  :on-remove="handleRemove"
+			  :on-success="updatasuccess"
+			  :on-error="updataerror"
 			  list-type="picture"
+			  :limit="1"
 			  >
 			  <el-button size="small" type="primary">点击上传</el-button>
 			  <div slot="tip" class="el-upload__tip">只能上传一张jpg/png文件</div>
 			</el-upload>
+			<img :src="merchdata.merchantsLogo" v-show="updataTF" style="width:100px;">
 		  </div>
 		</div>		
 		<div class="box">
@@ -59,15 +63,16 @@
 			return{
 				merchdata:{
 					id:'',
-					merchantsName:"",
-					merchantsPhone:"",
-					merchantsWeChat:"",
-					merchantsAddress:"",
-					merchantsAccount :"",
-					merchantsPassword:"",
-					merchantsDesc:"",
-					merchantsLogo:"172673"
+					merchantsName:'',
+					merchantsPhone:'',
+					merchantsWeChat:'',
+					merchantsAddress:'',
+					merchantsAccount :'',
+					merchantsPassword:'',
+					merchantsDesc:'',
+					merchantsLogo:""
 				},
+				updataTF:true
 			}
 		},
 		props:['editdata'],
@@ -88,12 +93,13 @@
 			this.merchdata.merchantsAccount=this.editdata.merchantsAccount;
 			this.merchdata.merchantsPassword=this.editdata.merchantsPassword;
 			this.merchdata.merchantsDesc=this.editdata.merchantsDesc;
-//			this.merchdata.merchantsLogo=this.editdata.merchantsLogo;
+			this.merchdata.merchantsLogo=this.editdata.merchantsLogo;
 			}
 		},
 		methods:{
 			Tureinfo(){
 				var that=this;
+				if(this.merchdata.merchantsName!=''&&this.merchdata.merchantsPhone!=''&&this.merchdata.merchantsWeChat!=''&&this.merchdata.merchantsAddress!=''&&this.merchdata.merchantsAccount!=''){				
 				this.$store.dispatch("Editshopname",this.merchdata).then((res)=>{
 					if(res.data.ok==true){
 							that.$message('编辑成功');
@@ -104,6 +110,19 @@
 //							that.$message(res.data);
 						}
 				})
+				}else{
+					if(this.merchdata.merchantsName==''){
+						that.$message('商家名称不能为空');
+					}else if(this.merchdata.merchantsPhone==''){
+						that.$message('商家电话不能为空');
+					}else if(this.merchdata.merchantsWeChat==''){
+						that.$message('商家微信不能为空');
+					}else if(this.merchdata.merchantsAddress==''){
+						that.$message('商家地址不能为空');
+					}else {
+						that.$message('商家账号不能为空');
+					}
+				}
 			},
 			Closeadd(){
 				this.$emit("Closeadd")
@@ -113,7 +132,17 @@
 		      },
 		    handlePreview(file) {
 		        console.log(file);
-		      }			
+		      },
+		    updatasuccess(res,file,fileList){
+		    	this.updataTF=false
+		    	this.merchdata.merchantsLogo=res.key;
+		    	console.log("res",res,file,fileList)
+		    },
+		    updataerror(res){
+		    	this.updataTF=false
+		    	console.log(res)
+		    	this.$message('上传失败，请重新上传');
+		    }
 		}
 	}
 	export default Editmerchants

@@ -34,10 +34,11 @@
 	</div>
 	<div class="select-box" v-if="btnauthority==1">
 	 <span class="other">店面:</span>
-	 <el-select v-model="searchdata.storeName" clearable placeholder="请选择" size="small"  >
+	 <el-select v-model="searchdata.nickname" clearable placeholder="请选择" size="small"  >
 	    <el-option
 	      v-for="(value,key) in storeslist"
-	      :key="value.nickname"
+	      :key="value.id"
+	      :label="value.nickname"
 	      :value="value.nickname">
 	       {{value.nickname}}
 	    </el-option>
@@ -56,7 +57,7 @@
 					realName:'',
 					startTime:'',
 					endTime:'',
-					storeName:''
+					nickname:''
 				},
 			    storeslist:[],		
 			}

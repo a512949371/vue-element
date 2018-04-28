@@ -112,12 +112,15 @@
 		created(){
 	      	var that=this;
 	      	this.loadTF=true;
-	      	this.$store.dispatch("Getalliancelist",this.pagedata).then(()=>{
-	      		that.listdata=this.$store.state.app.alliancelistdata.list;
-	            that.total=this.$store.state.app.alliancelistdata.total;
-		      	that.pagedata.pageNum=this.$store.state.app.alliancelistdata.pageNum;
-		      	that.pagedata.pagesize=this.$store.state.app.alliancelistdata.pageSize; 
-		      	that.loadTF=false
+	      	this.$store.dispatch("Getalliancelist",this.pagedata).then((res)=>{
+	      		if(res.data.ok==true){
+		      		that.listdata=this.$store.state.app.alliancelistdata.list;
+		            that.total=this.$store.state.app.alliancelistdata.total;
+			      	that.pagedata.pageNum=this.$store.state.app.alliancelistdata.pageNum;
+			      	that.pagedata.pagesize=this.$store.state.app.alliancelistdata.pageSize; 
+			      	that.loadTF=false	      			
+	      		}
+
 	      	})			
 		},
 		methods:{
@@ -126,13 +129,14 @@
 		         this.loadTF=true;
 		         this.pagedata.pagesize=val;
 		         this.$store.dispatch("Getalliancelist",this.pagedata).then((res)=>{
-		         	console.log("12345")
-		         	console.log(res.data.data.pageSize)
-		      		that.listdata=this.$store.state.app.alliancelistdata.list;
-		            that.total=this.$store.state.app.alliancelistdata.total;
-			      	that.pagedata.pageNum=this.$store.state.app.alliancelistdata.pageNum;
-			      	that.pagedata.pagesize=this.$store.state.app.alliancelistdata.pageSize; 
-			      	that.loadTF=false
+		         	if(res.data.ok==true){
+			      		that.listdata=this.$store.state.app.alliancelistdata.list;
+			            that.total=this.$store.state.app.alliancelistdata.total;
+				      	that.pagedata.pageNum=this.$store.state.app.alliancelistdata.pageNum;
+				      	that.pagedata.pagesize=this.$store.state.app.alliancelistdata.pageSize; 
+				      	that.loadTF=false		         		
+		         	}
+
 		        })
 	          console.log('每页 '+this.pagedata.pagesize+' 条');
 	        },
@@ -141,15 +145,19 @@
 		        this.loadTF=true;
 		        this.pagedata.pageNum=val;
 		        this.$store.dispatch("Getalliancelist",this.pagedata).then((res)=>{
-		        	if(res.data.data.list.length==0){
-		        		console.log("23333")
-		        	}else{
-			      		that.listdata=this.$store.state.app.alliancelistdata.list;
-			            that.total=this.$store.state.app.alliancelistdata.total;
-				      	that.pagedata.pageNum=this.$store.state.app.alliancelistdata.pageNum;
-				      	that.pagedata.pagesize=this.$store.state.app.alliancelistdata.pageSize; 
-				      	that.loadTF=false
-		      		}
+		        	if(res.data.ok==true){
+			        	if(res.data.data.list.length==0){
+			        		console.log("23333")
+			        	}else{
+				      		that.listdata=this.$store.state.app.alliancelistdata.list;
+				            that.total=this.$store.state.app.alliancelistdata.total;
+					      	that.pagedata.pageNum=this.$store.state.app.alliancelistdata.pageNum;
+					      	that.pagedata.pagesize=this.$store.state.app.alliancelistdata.pageSize; 
+					      	
+			      		}	
+			      	that.loadTF=false
+		        	}
+
 		        })
 	          console.log(`当前页: ${val}`);
 	        },

@@ -13,11 +13,11 @@
 					<div class="card-box">
 						<div class="dec">商家名称：</div>
 						<div class="input-box">
-							<div class="box-one">
+							<div class="box-one" v-if="vipshop==1">
 								<div>{{cardinfo.merchantsName}}</div>
-								<div class="btn ml20">去选择</div>
+								<div class="btn ml20" v-on:click="Chooseshop">去选择</div>
 							</div>
-							
+							<div class="box-one" v-else>{{cardinfo.merchantsName}}</div>
 						</div>
 						
 					</div>
@@ -89,6 +89,7 @@
 							使用
 						</div>
 					</div>
+					</div>
 					<div class="card-box">
 						<div class="dec">适用门店：</div>
 						<div class="input-box">
@@ -112,7 +113,6 @@
 						<div class="input-box">
 							<textarea v-model="editdata.useRules"></textarea>
 						</div>
-					</div>
 					</div>
 					<div class="flex-box">
 					<div class="addcard-box" v-on:click="Closelook">关闭</div>
@@ -151,11 +151,13 @@
 					storePhone:'',
 					storeAddress:'',
 					useRules:''					
-				}
+				},
+				vipshop:''
 			}
 		},
 		props:['carddata'],
 		created(){
+			this.vipshop=sessionStorage.getItem("shopi")
 		},
 		watch:{
 			datachange:function(){
@@ -165,25 +167,30 @@
 		computed:{
 			datachange(){
 				var that=this
-				this.$store.dispatch("Getcardinfo",this.carddata).then(()=>{
-					that.cardinfo.merchantsName=this.$store.state.app.cardinfodata.merchantsName;
-					that.cardinfo.type=this.$store.state.app.cardinfodata.type;
-					that.cardinfo.amount=this.$store.state.app.cardinfodata.amount;
-					that.cardinfo.rebate=this.$store.state.app.cardinfodata.rebate;
-					that.cardinfo.chapterTotal=this.$store.state.app.cardinfodata.chapterTotal;
-					that.cardinfo.isInvalid=this.$store.state.app.cardinfodata.isInvalid;
-					that.cardinfo.startTime=this.$store.state.app.cardinfodata.startTime;
-					that.cardinfo.endTime=this.$store.state.app.cardinfodata.endTime;
-					that.editdata.name=this.$store.state.app.cardinfodata.name;
-					that.editdata.id=this.$store.state.app.cardinfodata.id;
-					that.editdata.isZero=this.$store.state.app.cardinfodata.isZero;
-					that.editdata.lowest=this.$store.state.app.cardinfodata.lowest;
-					that.editdata.storeName=this.$store.state.app.cardinfodata.storeName;
-					that.editdata.storeId=this.$store.state.app.cardinfodata.storeId;
-					that.editdata.storePhone=this.$store.state.app.cardinfodata.storePhone;
-					that.editdata.storeAddress=this.$store.state.app.cardinfodata.storeAddress;
-					that.editdata.useRules=this.$store.state.app.cardinfodata.useRules;
-				})
+				console.log("carddata",this.carddata)
+				if(this.carddata !=0){
+					this.$store.dispatch("Getcardinfo",this.carddata).then(()=>{
+						console.log("merchantsName",this.$store.state.app.cardinfodata)
+						that.cardinfo.merchantsName=this.$store.state.app.cardinfodata.merchantsName;
+						that.cardinfo.type=this.$store.state.app.cardinfodata.type;
+						that.cardinfo.amount=this.$store.state.app.cardinfodata.amount;
+						that.cardinfo.rebate=this.$store.state.app.cardinfodata.rebate;
+						that.cardinfo.chapterTotal=this.$store.state.app.cardinfodata.chapterTotal;
+						that.cardinfo.isInvalid=this.$store.state.app.cardinfodata.isInvalid;
+						that.cardinfo.startTime=this.$store.state.app.cardinfodata.startTime;
+						that.cardinfo.endTime=this.$store.state.app.cardinfodata.endTime;
+						that.editdata.name=this.$store.state.app.cardinfodata.name;
+						that.editdata.id=this.$store.state.app.cardinfodata.id;
+						that.editdata.isZero=this.$store.state.app.cardinfodata.isZero;
+						that.editdata.lowest=this.$store.state.app.cardinfodata.lowest;
+						that.editdata.storeName=this.$store.state.app.cardinfodata.storeName;
+						that.editdata.storeId=this.$store.state.app.cardinfodata.storeId;
+						that.editdata.storePhone=this.$store.state.app.cardinfodata.storePhone;
+						that.editdata.storeAddress=this.$store.state.app.cardinfodata.storeAddress;
+						that.editdata.useRules=this.$store.state.app.cardinfodata.useRules;
+					})					
+				}
+
 			}
 		},
 		methods:{
@@ -200,7 +207,10 @@
 						},2000)
 					}
 				})
-			}
+			},
+			Chooseshop(){
+				this.$router.push("/merchants/merchantslist")
+			},
 		}
 	}
 	export default Lookcard

@@ -51,30 +51,34 @@ const actions = {
   	},
   	callback=function(res){
   		console.log(res)
-  		if(res.data.code=="00100000"){
+  		if(res.data.code=="00100000"||res.data.code=="100000"){
   			commit("settoken",res.data.msg);
   			setCookie("token",escape(res.data.msg)+"xlkLjxqy",1)
   			setCookie("username",res.data.data.username,1)
 	  		sessionStorage.setItem("menuItem",JSON.stringify(res.data.data.menuItems));
 	  		sessionStorage.setItem("buttonMenuItems",JSON.stringify(res.data.data.buttonMenuItems));
+	  		sessionStorage.setItem("shopname",res.data.data.merchantsName);
+	  		sessionStorage.setItem("shopid",res.data.data.merchantsId);
+	  		sessionStorage.setItem("shopi",res.data.data.isVipMerchants);
 				router.push('/index') 				
-			}else if(res.data.code=="00100001"){
-				Message.error({message:res.data.msg})
+			}else if(res.data.code=="00100001"||res.data.code=="100001"){
+				console.log("系统异常")
 			}else if(res.data.code=="401"){
 				router.push("/login")
 			}else{
-				Message.error({message:res.data.msg})
+				alert(res.data.msg)
 			}
   	}
   	return RequestAjax.request(data,callback)
     
   },
   logout({commit}) {
+  	console.log("outtoken",unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), ""))
   	 var data = {
   		requestType:"post",
-  		requestUrl:http+"/index/logout",
+  		requestUrl:http+"/index/loginOut",
   		requestdata:'',
-  		requesttoken:getCookie('token')
+  		requesttoken:unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
   	},
   	callback=function(res){
   		if(res.data.ok==true){
@@ -82,10 +86,14 @@ const actions = {
 		  	delCookie("username");
 		  	sessionStorage.removeItem("menuItem");
 		  	sessionStorage.removeItem("buttonMenuItems");
+		  	sessionStorage.removeItem("shopname");
+	  		sessionStorage.removeItem("shopid");
+	  		sessionStorage.removeItem("shopi");
 		  	delCookie("buttonMenuItems");
+		  	console.log("logout")
 		    router.push("/login")
   		}else{
-  			alert(res.data.msg)
+  			console.log(res.data.msg)
   		}
 		
   	}

@@ -1,7 +1,7 @@
 <template>
  <div class="bastic-table postion-box">
 	<div class="select-box">
-		用户名称: <input type="text" value="" class="inputbox"/>
+		用户名称: <input type="text" v-model="pagedata.username" class="inputbox"/>
 	</div>
 	<div class="select-box">
 		<div class="select" style="text-align: right;">
@@ -12,11 +12,20 @@
 	</div>
       <div class="page-content">
 	 <el-table
-	    style="width: 100%" :data="listdata" border>
-	    <el-table-column
-	      type="selection"
-	      width="55">
-	    </el-table-column>
+	    style="width: 100%" :data="listdata" border
+	    highlight-current-row
+	    :row-class-name="tableRowClassName"
+	    @current-change="Singleselection">
+	    <el-table-column width="55">
+	     <template slot-scope="scope">
+	     	<div class="check-box" v-if="scope.row.index===selectnum">
+	     		<img src="../assets/images/icon-2.png" />
+	     	</div>
+	     	<div class="check-box" v-else>
+	     		<img src="../assets/images/icon-1.png" />
+	     	</div>
+	     </template>
+	    </el-table-column>	    
 	    <el-table-column 
 	      type="index"
 	      label="序号"
@@ -88,25 +97,29 @@
 	      pagedata:{
           pageNum:1,
           pagesize:10,
-          userName:''
+          username:''
 	      },
           total:1,
           listdata:[],
           editdata:'',
           editnum:'',
           loadTF:false,
-          searchdata:''
+          searchdata:'',
+          selectnum:''
         }
       },
       created(){
       	var that=this;
       	this.loadTF=true;
-      	this.$store.dispatch("Getsuser",this.pagedata).then(()=>{
-      		that.listdata=this.$store.state.app.suserdata.list;
-            that.total=this.$store.state.app.suserdata.total;
-	      	that.pagedata.pageNum=this.$store.state.app.suserdata.pageNum;
-	      	that.pagedata.pagesize=this.$store.state.app.suserdata.pageSize; 
-	      	that.loadTF=false
+      	this.$store.dispatch("Getsuser",this.pagedata).then((res)=>{
+      		if(res.data.ok==true){
+	      		that.listdata=this.$store.state.app.suserdata.list;
+	            that.total=this.$store.state.app.suserdata.total;
+		      	that.pagedata.pageNum=this.$store.state.app.suserdata.pageNum;
+		      	that.pagedata.pagesize=this.$store.state.app.suserdata.pageSize; 
+		      	that.loadTF=false      			
+      		}
+
       	})
       },
       methods: {
@@ -115,13 +128,14 @@
 	         this.loadTF=true;
 	         this.pagedata.pagesize=val;
 	         this.$store.dispatch("Getsuser",this.pagedata).then((res)=>{
-	         	console.log("12345")
-	         	console.log(res.data.data.pageSize)
-	        	that.total=this.$store.state.app.suserdata.total;
-	      		that.pagedata.pageNum=this.$store.state.app.suserdata.pageNum;
-	      		that.pagedata.pagesize=this.$store.state.app.suserdata.pageSize;
-	      		that.listdata=this.$store.state.app.suserdata.list;
-	      		that.loadTF=false
+	         	if(res.data.ok==true){
+		        	that.total=this.$store.state.app.suserdata.total;
+		      		that.pagedata.pageNum=this.$store.state.app.suserdata.pageNum;
+		      		that.pagedata.pagesize=this.$store.state.app.suserdata.pageSize;
+		      		that.listdata=this.$store.state.app.suserdata.list;
+		      		that.loadTF=false	         		
+	         	}
+
 	        })
           console.log('每页 '+this.pagedata.pagesize+' 条');
         },
@@ -130,15 +144,18 @@
 	        this.loadTF=true;
 	        this.pagedata.pageNum=val;
 	        this.$store.dispatch("Getsuser",this.pagedata).then((res)=>{
-	        	if(res.data.data.list.length==0){
-	        		console.log("23333")
-	        	}else{
-	        	that.total=this.$store.state.app.suserdata.total;
-	      		that.pagedata.pageNum=this.$store.state.app.suserdata.pageNum;
-	      		that.pagedata.pagesize=this.$store.state.app.suserdata.pageSize;
-	      		that.listdata=this.$store.state.app.suserdata.list;
-	      		that.loadTF=false
-	      		}
+	        	if(res.data.ok==true){
+		        	if(res.data.data.list.length==0){
+		        		console.log("23333")
+		        	}else{
+		        	that.total=this.$store.state.app.suserdata.total;
+		      		that.pagedata.pageNum=this.$store.state.app.suserdata.pageNum;
+		      		that.pagedata.pagesize=this.$store.state.app.suserdata.pageSize;
+		      		that.listdata=this.$store.state.app.suserdata.list;
+		      		}	
+		      	that.loadTF=false
+	        	}
+
 	        })
           console.log(`当前页: ${val}`);
         },
@@ -160,14 +177,29 @@
         Parentsearch(){
 			var that =this;
 	      	this.loadTF=true;
-	      	this.$store.dispatch("Getsuser",this.pagedata).then(()=>{
-	      		that.listdata=this.$store.state.app.suserdata.list;
-	            that.total=this.$store.state.app.suserdata.total;
-		      	that.pagedata.pageNum=this.$store.state.app.suserdata.pageNum;
-		      	that.pagedata.pagesize=this.$store.state.app.suserdata.pageSize; 
-		      	that.loadTF=false
+	      	this.$store.dispatch("Getsuser",this.pagedata).then((res)=>{
+	      		if(res.data.ok==true){
+		      		that.listdata=this.$store.state.app.suserdata.list;
+		            that.total=this.$store.state.app.suserdata.total;
+			      	that.pagedata.pageNum=this.$store.state.app.suserdata.pageNum;
+			      	that.pagedata.pagesize=this.$store.state.app.suserdata.pageSize; 
+			      	that.loadTF=false	      			
+	      		}
 	      	})		        	
-        }
+        },
+        Singleselection(val){
+        	this.currentRow = val
+        	for(var i=0;i<this.listdata.length;i++){
+        		if(this.currentRow.id==this.listdata[i].id){
+        			this.selectnum= i
+        			return
+        		}
+        	}
+        },
+        tableRowClassName(row, index) {
+            //把每一行的索引放进row
+            row.index = index
+        },
       }
     }
   </script>

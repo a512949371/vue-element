@@ -22,10 +22,14 @@
 	 <el-table
 	    style="width: 100%" :data="listdata" border
 	    highlight-current-row
+	    :row-class-name="tableRowClassName"
 	    @current-change="Singleselection">
 	    <el-table-column width="55">
 	     <template slot-scope="scope">
-	     	<div class="check-box">
+	     	<div class="check-box" v-if="scope.row.index===selectnum">
+	     		<img src="../assets/images/icon-2.png" />
+	     	</div>
+	     	<div class="check-box" v-else>
 	     		<img src="../assets/images/icon-1.png" />
 	     	</div>
 	     </template>
@@ -106,24 +110,28 @@
 	 			newboxTF:false,
 	 			editboxTF:false,
 	 			num:"1",
-	 			editdata:"1",
+	 			editdata:[],
 	 			loadTF:false,
 	 			currentRow:null,
 	 			addticketdata:{
 	 				id:'',
 	 				name:''
-	 			}
+	 			},
+	 			selectnum:''
 	 		}
 	 	},
 	 	created(){
 	 		var that=this;
 	 		this.loadTF=true;
-	 		this.$store.dispatch("Getshoplist",this.pagedata).then(()=>{
-	 			that.listdata=this.$store.state.app.shoplistdata.list
-	            that.total=this.$store.state.app.shoplistdata.total;
-		      	that.pagedata.pageNum=this.$store.state.app.shoplistdata.pageNum;
-		      	that.pagedata.pagesize=this.$store.state.app.shoplistdata.pageSize; 
-		      	that.loadTF=false
+	 		this.$store.dispatch("Getshoplist",this.pagedata).then((res)=>{
+	 			if(res.data.ok==true){
+		 			that.listdata=this.$store.state.app.shoplistdata.list
+		            that.total=this.$store.state.app.shoplistdata.total;
+			      	that.pagedata.pageNum=this.$store.state.app.shoplistdata.pageNum;
+			      	that.pagedata.pagesize=this.$store.state.app.shoplistdata.pageSize; 
+			      	that.loadTF=false	 				
+	 			}
+
 	 		})
 	 	},
 	 	methods:{
@@ -132,13 +140,13 @@
 	         this.loadTF=true;
 	         this.pagedata.pagesize=val;
 	         this.$store.dispatch("Getshoplist",this.pagedata).then((res)=>{
-	         	console.log("12345")
-	         	console.log(res.data.data.pageSize)
-	      		that.listdata=this.$store.state.app.shoplistdata.list
-	            that.total=this.$store.state.app.shoplistdata.total;
-		      	that.pagedata.pageNum=this.$store.state.app.shoplistdata.pageNum;
-		      	that.pagedata.pagesize=this.$store.state.app.shoplistdata.pageSize; 
-		      	that.loadTF=false
+	         	if(res.data.ok==true){
+		      		that.listdata=this.$store.state.app.shoplistdata.list
+		            that.total=this.$store.state.app.shoplistdata.total;
+			      	that.pagedata.pageNum=this.$store.state.app.shoplistdata.pageNum;
+			      	that.pagedata.pagesize=this.$store.state.app.shoplistdata.pageSize; 
+			      	that.loadTF=false	         		
+	         	}
 	        })
           console.log('每页 '+this.pagedata.pagesize+' 条');
         },
@@ -147,32 +155,45 @@
 	        this.loadTF=true;
 	        this.pagedata.pageNum=val;
 	        this.$store.dispatch("Getshoplist",this.pagedata).then((res)=>{
-	        	if(res.data.data.list.length==0){
-	        		console.log("23333")
-	        	}else{
-	        		that.listdata=this.$store.state.app.shoplistdata.list
-		            that.total=this.$store.state.app.shoplistdata.total;
-			      	that.pagedata.pageNum=this.$store.state.app.shoplistdata.pageNum;
-			      	that.pagedata.pagesize=this.$store.state.app.shoplistdata.pageSize; 
-			      	that.loadTF=false
-	      		}
+	        	if(res.data.ok==true){
+		        	if(res.data.data.list.length==0){
+		        		console.log("23333")
+		        	}else{
+		        		that.listdata=this.$store.state.app.shoplistdata.list
+			            that.total=this.$store.state.app.shoplistdata.total;
+				      	that.pagedata.pageNum=this.$store.state.app.shoplistdata.pageNum;
+				      	that.pagedata.pagesize=this.$store.state.app.shoplistdata.pageSize; 
+				      	
+		      		}
+		        that.loadTF=false
+	        	}
+
 	        })
           console.log(`当前页: ${val}`);
         },
         Parentsearch(){
 			var that =this;
 	      	this.loadTF=true;
-	      	this.$store.dispatch("Getshoplist",this.pagedata).then(()=>{
-        		that.listdata=this.$store.state.app.shoplistdata.list
-	            that.total=this.$store.state.app.shoplistdata.total;
-		      	that.pagedata.pageNum=this.$store.state.app.shoplistdata.pageNum;
-		      	that.pagedata.pagesize=this.$store.state.app.shoplistdata.pageSize; 
-		      	that.loadTF=false
+	      	this.$store.dispatch("Getshoplist",this.pagedata).then((res)=>{
+	      		if(res.data.ok==true){
+	        		that.listdata=this.$store.state.app.shoplistdata.list
+		            that.total=this.$store.state.app.shoplistdata.total;
+			      	that.pagedata.pageNum=this.$store.state.app.shoplistdata.pageNum;
+			      	that.pagedata.pagesize=this.$store.state.app.shoplistdata.pageSize; 
+			      	that.loadTF=false	      			
+	      		}
+
 	      	})		        	
         },
         Singleselection(val){
         	this.currentRow = val
-        	console.log()
+        	console.log("singleTable",this.currentRow)
+        	for(var i=0;i<this.listdata.length;i++){
+        		if(this.currentRow.id==this.listdata[i].id){
+        			this.selectnum= i
+        			return
+        		}
+        	}
         },
  		Closeadd(num){
  			if(num==1){
@@ -187,18 +208,23 @@
  			this.newboxTF=true
  		},
  		Mycard(){
- 			this.$route.push("/cardmanagement/cardboxlist")
+ 			this.$router.push("/cardmanagement/cardboxlist")
  		},
  		Editsuser(index,row){
  			this.editboxTF=true;
  			this.editdata=row
+ 			console.log("feditdata",this.editdata)
  		},
  		Addticket(){
  			this.addticketdata.id=this.currentRow.id;
  			this.addticketdata.name=this.currentRow.merchantsName
  			this.$router.push("/cardmanagement/newcardbox?id="+this.addticketdata.id+'&name='+this.addticketdata.name)
  			console.log(this.currentRow)
- 		}
+ 		},
+ 		tableRowClassName(row, index) {
+            //把每一行的索引放进row
+            row.index = index
+        },
 	 	}
 	 }
 	 export default Merchantslist

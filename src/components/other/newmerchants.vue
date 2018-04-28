@@ -35,10 +35,13 @@
 			<div class="left">商家LOGO：</div>
 			<div class="right"><el-upload
 			  class="upload-demo"
-			  action="https://jsonplaceholder.typicode.com/posts/"
+			  action="http://192.168.1.115:9104/xdjCore/xdjMerchantsAdmin/admin/file/upload"
 			  :on-preview="handlePreview"
 			  :on-remove="handleRemove"
 			  list-type="picture"
+			  :on-success="updatasuccess"
+			  :on-error="updataerror"
+			  :limit="1"
 			  >
 			  <el-button size="small" type="primary">点击上传</el-button>
 			  <div slot="tip" class="el-upload__tip">只能上传一张jpg/png文件</div>
@@ -58,14 +61,14 @@
 		data(){
 			return{
 				merchdata:{
-					merchantsName:"",
-					merchantsPhone:"",
-					merchantsWeChat:"",
-					merchantsAddress:"",
-					merchantsAccount :"",
-					merchantsPassword:"",
-					merchantsDesc:"",
-					merchantsLogo:"172673"
+					merchantsName:'',
+					merchantsPhone:'',
+					merchantsWeChat:'',
+					merchantsAddress:'',
+					merchantsAccount:'',
+					merchantsPassword:'',
+					merchantsDesc:'',
+					merchantsLogo:""
 				},
 			}
 		},
@@ -75,6 +78,7 @@
 		methods:{
 			Tureinfo(){
 				var that=this;
+				if(this.merchdata.merchantsName!=''&&this.merchdata.merchantsPhone!=''&&this.merchdata.merchantsWeChat!=''&&this.merchdata.merchantsAddress!=''&&this.merchdata.merchantsAccount!=''&&this.merchdata.merchantsPassword!=''){
 					this.$store.dispatch("Addshopname",this.merchdata).then((res)=>{
 						if(res.data.ok==true){
 							that.$message('新增成功');
@@ -84,7 +88,23 @@
 						}else{
 //							that.$message(res.data);
 						}
-					})
+					})					
+				}else{
+					if(this.merchdata.merchantsName==''){
+						that.$message('商家名称不能为空');
+					}else if(this.merchdata.merchantsPhone==''){
+						that.$message('商家电话不能为空');
+					}else if(this.merchdata.merchantsWeChat==''){
+						that.$message('商家微信不能为空');
+					}else if(this.merchdata.merchantsAddress==''){
+						that.$message('商家地址不能为空');
+					}else if(this.merchdata.merchantsAccount==''){
+						that.$message('商家账号不能为空');
+					}else{
+						that.$message('商家密码不能为空');
+					}
+				}
+
 			},
 			Closeadd(){
 				this.$emit("Closeadd")
@@ -93,8 +113,17 @@
 		        console.log(file, fileList);
 		      },
 		    handlePreview(file) {
+		    	console.log("222222");
 		        console.log(file);
-		      }			
+		      },
+		    updatasuccess(res,file,fileList){
+		    	this.merchdata.merchantsLogo=res.key;
+		    	console.log(res,file,fileList)
+		    },
+		    updataerror(res){
+		    	console.log(res)
+		    	this.$message('上传失败，请重新上传');
+		    }
 		}
 	}
 	export default Newmerchants

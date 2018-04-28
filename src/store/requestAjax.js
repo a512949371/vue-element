@@ -19,28 +19,32 @@
 	}, err=> {
 		console.log(err)
 	  if (err.response.status == 504||err.response.status == 404) {
-	    Message.error({message: '服务器被吃了⊙﹏⊙∥'});
+	    console.log("404");
 	  } else if (err.response.status == 401) {
 	    Message.error({message:"登录失效"});
 	    delCookie("token")
 	  	delCookie("username");
 	  	sessionStorage.removeItem("menuItem");
-	  	console.log(sessionStorage.getItem("menuItem"))
 	  	sessionStorage.removeItem("buttonMenuItems");
+	  	sessionStorage.removeItem("shopname");
+	  	sessionStorage.removeItem("shopid");
+	  	sessionStorage.removeItem("shopi");
 	    setTimeout(function(){
 	    	router.push("/login")
 	    },2000)
-	  }else if(err.response.status == "00100025"){
+	  }else if(err.response.status == "00100025"||err.response.status=="100025"){
 	  	Message.error({message:"您没有权限做此操作"});
-	  }else {
-	    Message.error({message: '系统繁忙!'});
+	  }else if(err.response.status == "00100031"||err.response.status=="100031"){
+	  	console.log("网络错误");
+	  }
+	  else {
+	    console.log(err);
 	  }
 	  return Promise.resolve(err);
 	})
 
  class requestAjax {
  	request(Data,callback){
- 		console.log(Data.requesttoken)
 	 		const p = axios({
 				method:Data.requestType,
 				url:Data.requestUrl,

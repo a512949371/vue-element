@@ -171,13 +171,15 @@
       created(){
       	var that=this;
       	this.loadTF=true;
-      	this.$store.dispatch("Getuuserquest",this.pagedatas).then(()=>{
-      		that.uuserlist=this.$store.state.app.uuserdata.list;
-      		that.btnauthority=this.$store.state.app.uuserdata.orderBy;
-            that.total=this.$store.state.app.uuserdata.total;
-	      	that.pagedatas.pageNum=this.$store.state.app.uuserdata.pageNum;
-	      	that.pagedatas.pagesize=this.$store.state.app.uuserdata.pageSize; 
-	      	that.loadTF=false
+      	this.$store.dispatch("Getuuserquest",this.pagedatas).then((res)=>{
+      		if(res.data.ok==true){
+	      		that.uuserlist=this.$store.state.app.uuserdata.list;
+	      		that.btnauthority=this.$store.state.app.uuserdata.orderBy;
+	            that.total=this.$store.state.app.uuserdata.total;
+		      	that.pagedatas.pageNum=this.$store.state.app.uuserdata.pageNum;
+		      	that.pagedatas.pagesize=this.$store.state.app.uuserdata.pageSize; 
+		      	that.loadTF=false      			
+      		}
       	});  
       },
       methods:{
@@ -186,11 +188,14 @@
 	         this.loadTF=true;
 	         this.pagedatas.pagesize=val;
 	         this.$store.dispatch("Getuuserquest",this.pagedatas).then((res)=>{
-	        	that.total=this.$store.state.app.uuserdata.total;
-	      		that.pagedatas.pageNum=this.$store.state.app.uuserdata.pageNum;
-	      		that.pagedatas.pagesize=this.$store.state.app.uuserdata.pageSize;
-	      		that.uuserlist=this.$store.state.app.uuserdata.list;
-	      		that.loadTF=false
+	         	if(res.data.ok==true){
+		        	that.total=this.$store.state.app.uuserdata.total;
+		      		that.pagedatas.pageNum=this.$store.state.app.uuserdata.pageNum;
+		      		that.pagedatas.pagesize=this.$store.state.app.uuserdata.pageSize;
+		      		that.uuserlist=this.$store.state.app.uuserdata.list;
+		      		that.loadTF=false	         		
+	         	}
+
 	        })
           console.log('每页 '+this.pagedatas.pagesize+' 条');
         },
@@ -199,15 +204,19 @@
 	        this.loadTF=true;
 	        this.pagedatas.pageNum=val;
 	        this.$store.dispatch("Getuuserquest",this.pagedatas).then((res)=>{
-	        	if(res.data.data.list.length==0){
-	        		console.log("23333")
-	        	}else{
-	        	that.total=this.$store.state.app.uuserdata.total;
-	      		that.pagedatas.pageNum=this.$store.state.app.uuserdata.pageNum;
-	      		that.pagedatas.pagesize=this.$store.state.app.uuserdata.pageSize;
-	      		that.uuserlist=this.$store.state.app.uuserdata.list;
-	      		that.loadTF=false
-	      		}
+	        	if(res.data.ok==true){
+		        	if(res.data.data.list.length==0){
+		        		console.log("23333")
+		        	}else{
+		        	that.total=this.$store.state.app.uuserdata.total;
+		      		that.pagedatas.pageNum=this.$store.state.app.uuserdata.pageNum;
+		      		that.pagedatas.pagesize=this.$store.state.app.uuserdata.pageSize;
+		      		that.uuserlist=this.$store.state.app.uuserdata.list;
+		      		
+		      		}
+		        that.loadTF=false
+	        	}
+
 	        })
           console.log(`当前页: ${val}`);
         }, 
@@ -292,13 +301,15 @@
         	this.pagedatas.realName=childdata.realName;
         	this.pagedatas.startTime=childdata.startTime;
         	this.pagedatas.endTime=childdata.endTime;
-        	this.pagedatas.storeName=childdata.storeName;
-        	this.$store.dispatch("Getuuserquest",this.pagedatas).then(()=>{
-	      		that.uuserlist=this.$store.state.app.uuserdata.list;
-	      		that.total=this.$store.state.app.uuserdata.total;
-	      		that.pagedatas.pageNum=this.$store.state.app.uuserdata.pageNum;
-	      		that.pagedatas.pagesize=this.$store.state.app.uuserdata.pageSize;    
-	      		that.loadTF=false
+        	this.pagedatas.storeName=childdata.nickname;
+        	this.$store.dispatch("Getuuserquest",this.pagedatas).then((res)=>{
+        		if(res.data.ok==true){
+	 	      		that.uuserlist=this.$store.state.app.uuserdata.list;
+		      		that.total=this.$store.state.app.uuserdata.total;
+		      		that.pagedatas.pageNum=this.$store.state.app.uuserdata.pageNum;
+		      		that.pagedatas.pagesize=this.$store.state.app.uuserdata.pageSize;    
+		      		that.loadTF=false       			
+        		}
 	      	});  
         },
         Searchactmoney(){

@@ -32,6 +32,7 @@ const state = {
   uuserdata:'',
   payactdata:'',
   storesdata:'',
+  shopnamedatalist:'',
   paylistdata:'',
   consumptionlistdata:'',
   shoplistdata:'',
@@ -74,6 +75,9 @@ const mutations = {
   },
   setstoresdata(state,data){
   	state.storesdata=data
+  },
+  setshopnamedata(state,data){
+  	state.shopnamedatalist=data
   },
   setpaylistdata(state,data){
   	state.paylistdata=data
@@ -133,11 +137,10 @@ const actions = {
 	 },
 	 //系统管理用户列表
 	 Getsuser:function({commit},pagedata){
-	 	console.log("23333")
-	 	console.log(getCookie('token'))
+	 	console.log("23333",pagedata)
 	 		var data = {
 	  		requestType:"get",
-	  		requestUrl:http+"/admin/manage/list?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize+'&userName='+pagedata.userName,
+	  		requestUrl:httpss+"/admin/manage/list?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize+'&username='+pagedata.username,
 	  		requestdata:'',
 	  		requesttoken:unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
 	  	},
@@ -156,7 +159,7 @@ const actions = {
   Editsuserquest:function({commit},editdata){
 	  	var data = {
 	  		requestType:"post",
-	  		requestUrl:http+"/admin/manage/update",
+	  		requestUrl:httpss+"/admin/manage/update",
 	  		requestdata:editdata,
 	  		requesttoken: unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
 	  	},
@@ -169,7 +172,7 @@ const actions = {
   Getrole:function({commit},pagedata){
 	 		var data = {
 	  		requestType:"get",
-	  		requestUrl:http+"/admin/role/list?pageNo=1&pageSize=50",
+	  		requestUrl:httpss+"/admin/merchantsRole/roles",
 	  		requestdata:'',
 	  		requesttoken: unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
 	  	},
@@ -189,7 +192,7 @@ const actions = {
   	console.log(roledata)
 	  	var data = {
 	  		requestType:"post",
-	  		requestUrl:http+"/admin/manage/insertUser",
+	  		requestUrl:httpss+"/admin/manage/insertUser",
 	  		requestdata:roledata,
 	  		requesttoken: unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
 	  	},
@@ -202,7 +205,7 @@ const actions = {
   Getcardchargequest:function({commit},pagedata){
   	var data={
   		requestType:"get",
-  		requestUrl:http+"/admin/chargeset/list?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize,
+  		requestUrl:http+"/admin/chargeset/chargeSets?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize,
   		requestdata:'',
 	  	requesttoken: unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
   	},
@@ -267,7 +270,7 @@ const actions = {
 	  		if(res.data.ok==true){
 	  			commit("setuuserdata",res.data.data)
 	  		}else{
-	  			Message.error({message:res.data.msg})
+	  			alert("setuuserdata",res.data.msg)
 	  		}
 	  		
 	  	}
@@ -286,7 +289,7 @@ const actions = {
   		if(res.data.ok==true){
   			commit("setpayactdata",res.data.data)
   		}else{
-  			Message.error({message:res.data.msg})
+  			alert(res.data.msg)
   		}
   		
   	}
@@ -296,7 +299,7 @@ const actions = {
   Getstoresquest:function({commit}){
   	var data={
   		requestType:"get",
-  		requestUrl:http+"/admin/consume/selectName",
+  		requestUrl:httpss+"/admin/manage/selectName",
   		requestdata:'',
 	  	requesttoken: unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
   	},
@@ -304,7 +307,25 @@ const actions = {
   		if(res.data.ok==true){
   			commit("setstoresdata",res.data.data)
   		}else{
-  			Message.error({message:res.data.msg})
+  			alert(res.data.msg)
+  		}
+  		
+  	}
+  	return RequestAjax.request(data,callback)  	
+  },
+  //获取商家列表
+  Getshopnamequest:function({commit}){
+  	var data={
+  		requestType:"post",
+  		requestUrl:https+"/admin/MerchantsInfo/getAllMerchantsInfo",
+  		requestdata:'',
+	  	requesttoken: unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
+  	},
+  	callback=function(res){
+  		if(res.data.ok==true){
+  			commit("setshopnamedata",res.data.data)
+  		}else{
+  			alert(res.data.msg)
   		}
   		
   	}
@@ -323,7 +344,7 @@ const actions = {
   		if(res.data.ok==true){
   			
   		}else{
-  			Message.error({message:res.data.msg})
+  			alert(res.data.msg)
   		}
   	}
   	return RequestAjax.request(data,callback)  	
@@ -340,7 +361,7 @@ const actions = {
   		if(res.data.ok==true){
   			
   		}else{
-  			Message.error({message:res.data.msg})
+  			alert(res.data.msg)
   		}
   	}
   	return RequestAjax.request(data,callback)  	  	
@@ -357,7 +378,7 @@ const actions = {
   		if(res.data.ok==true){
   			console.log("查询成功")
   		}else{
-  			Message.error({message:res.data.msg})
+  			alert(res.data.msg)
   		}
   	}
   	return RequestAjax.request(data,callback)  	  	
@@ -374,7 +395,7 @@ const actions = {
   		if(res.data.ok==true){
   			console.log("查询成功")
   		}else{
-  			Message.error({message:res.data.msg})
+  			alert(res.data.msg)
   		}
   	}
   	return RequestAjax.request(data,callback)  	  	
@@ -383,7 +404,7 @@ const actions = {
   Getpaylistquest:function({commit},pagedata){
   	var data={
   		requestType:"get",
-  		requestUrl:http+"/admin/expand/selectExpand?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize+'&phone='+pagedata.phone+'&realName='+pagedata.realName+'&storeName='+pagedata.storesdata,
+  		requestUrl:http+"/admin/expand/selectExpand?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize+'&phone='+pagedata.phone+'&realName='+pagedata.realName+'&storeName='+pagedata.storeId,
   		requestdata:'',
 	  	requesttoken: unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
   	},
@@ -391,7 +412,7 @@ const actions = {
   		if(res.data.ok==true){
   		 commit("setpaylistdata",res.data.data)  			
   		}else{
-  			Message.error({message:res.data.msg})
+  			alert(res.data.msg)
   		}
 
   	}
@@ -402,7 +423,7 @@ const actions = {
   	console.log(pagedata)
    	var data={
   		requestType:"get",
-  		requestUrl:http+"/admin/consume/selectOrder?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize+'&phone='+pagedata.phone+'&userName='+pagedata.userName+'&storeName='+pagedata.storesdata,
+  		requestUrl:http+"/admin/consume/selectOrder?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize+'&phone='+pagedata.phone+'&userName='+pagedata.userName+'&storeName='+pagedata.storeId,
   		requestdata:'',
 	  	requesttoken: unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
   	},
@@ -477,7 +498,7 @@ const actions = {
   Getcardlist:function({commit},pagedata){
    	var data={
   		requestType:"get",
-  		requestUrl:httpss+"/admin/chapter/chapterList?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize+'&name='+pagedata.name+'&storeName='+pagedata.storeName,
+  		requestUrl:httpss+"/admin/chapter/chapterList?pageNo="+pagedata.pageNum+'&pageSize='+pagedata.pagesize+'&name='+pagedata.name+'&storeId='+pagedata.id,
   		requestdata:'',
 	  	requesttoken:unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
   	},
@@ -538,17 +559,7 @@ const actions = {
   },
   //新增卡包信息
   Addcardinfo:function({commit},carddata){
-  	if(carddata.isZero){
-  		carddata.isZero=1
-  	}else{
-  		carddata.isZero=0
-  	}
-  	if(carddata.isInvalid){
-  		carddata.isInvalid=1
-  	}else{
-  		carddata.isInvalid=0
-  	}
-  	console.log(carddata)
+  	console.log("carddata",carddata)
    	var data={
   		requestType:"post",
   		requestUrl:httpss+"/admin/chapter/insert",
@@ -647,6 +658,25 @@ const actions = {
   	}
   	return RequestAjax.request(data,callback)  	
   },
+  //添加图片
+  Addpicquest:function({commit}){
+   	var data={
+  		requestType:"post",
+  		requestUrl:httpss+"/admin/file/upload",
+  		requestdata:'',
+	  	requesttoken:unescape(getCookie('token')).replace(new RegExp("xlkLjxqy"), "")
+  	},
+  	callback=function(res){
+  		console.log(res)
+  		if(res.data.ok==true){	
+  			console.log("添加图片成功")
+  		}else{
+  			Message.error({message:res.data.msg})
+  		}
+
+  	}
+  	return RequestAjax.request(data,callback)  	  	
+  }
 }
 
 export default {

@@ -9,12 +9,13 @@
 			</div>
 			<div class="select" >
 			 <span class="other">商家:</span>
-			 <el-select  clearable placeholder="请选择" size="small" v-model="pagedata.storeName"  >
+			 <el-select  clearable placeholder="请选择" size="small" v-model="pagedata.id"  >
 			    <el-option
 			      v-for="(value,key) in storeslist"
-			      :key="value.nickname"
-			      :value="value.nickname">
-			       {{value.nickname}}
+			      :key="value.id"
+			      :label="value.merchantsName"
+			      :value="value.id">
+			       {{value.merchantsName}}
 			    </el-option>
 			  </el-select>	
 			</div>
@@ -134,30 +135,32 @@
 		          pageNum:1,
 		          pagesize:10,
 		          name:'',
-		          storeName:''
+		          id:''
 			    },	 			
 	 			listdata:[],
 	 			lookboxTF:false,
 	 			checked:false,
 	 			storeslist:[],
 	 			total:1,
-	 			onecarddata:''
+	 			onecarddata:'0'
 	 		}
 	 	},
 	 	created(){
 	 		var that=this;
 	 		this.loadTF=true;
-	 		this.$store.dispatch("Getcardlist",this.pagedata).then(()=>{
-	 			that.listdata=this.$store.state.app.cardlistdata.list
-	            that.total=this.$store.state.app.cardlistdata.total;
-		      	that.pagedata.pageNum=this.$store.state.app.cardlistdata.pageNum;
-		      	that.pagedata.pagesize=this.$store.state.app.cardlistdata.pageSize; 
-		      	that.loadTF=false
+	 		this.$store.dispatch("Getcardlist",this.pagedata).then((res)=>{
+	 			if(res.data.ok==true){
+		 			that.listdata=this.$store.state.app.cardlistdata.list
+		            that.total=this.$store.state.app.cardlistdata.total;
+			      	that.pagedata.pageNum=this.$store.state.app.cardlistdata.pageNum;
+			      	that.pagedata.pagesize=this.$store.state.app.cardlistdata.pageSize; 
+			      	that.loadTF=false	 				
+	 			}
+
 	 		})
-	      	this.$store.dispatch("Getstoresquest").then((res)=>{
-	      		console.log("商家列表")
-	      		console.log(res)
-	      		that.storeslist=this.$store.state.app.storesdata
+	      	this.$store.dispatch("Getshopnamequest").then((res)=>{
+	      		console.log("商家列表",res)
+	      		that.storeslist=this.$store.state.app.shopnamedatalist
 	      	});	
 	 	},
 		methods:{
@@ -166,13 +169,14 @@
 		         this.loadTF=true;
 		         this.pagedata.pagesize=val;
 		         this.$store.dispatch("Getcardlist",this.pagedata).then((res)=>{
-		         	console.log("12345")
-		         	console.log(res.data.data.pageSize)
-		      		that.listdata=this.$store.state.app.cardlistdata.list
-		            that.total=this.$store.state.app.cardlistdata.total;
-			      	that.pagedata.pageNum=this.$store.state.app.cardlistdata.pageNum;
-			      	that.pagedata.pagesize=this.$store.state.app.cardlistdata.pageSize; 
-			      	that.loadTF=false
+		         	if(res.data.ok==true){
+			      		that.listdata=this.$store.state.app.cardlistdata.list
+			            that.total=this.$store.state.app.cardlistdata.total;
+				      	that.pagedata.pageNum=this.$store.state.app.cardlistdata.pageNum;
+				      	that.pagedata.pagesize=this.$store.state.app.cardlistdata.pageSize; 
+				      	that.loadTF=false		         		
+		         	}
+
 		        })
 	          console.log('每页 '+this.pagedata.pagesize+' 条');
 	        },
@@ -181,15 +185,18 @@
 		        this.loadTF=true;
 		        this.pagedata.pageNum=val;
 		        this.$store.dispatch("Getcardlist",this.pagedata).then((res)=>{
-		        	if(res.data.data.list.length==0){
-		        		console.log("23333")
-		        	}else{
-		        		that.listdata=this.$store.state.app.cardlistdata.list
-			            that.total=this.$store.state.app.cardlistdata.total;
-				      	that.pagedata.pageNum=this.$store.state.app.cardlistdata.pageNum;
-				      	that.pagedata.pagesize=this.$store.state.app.cardlistdata.pageSize; 
-				      	that.loadTF=false
-		      		}
+		        	if(res.data.ok==true){
+			        	if(res.data.data.list.length==0){
+			        		console.log("23333")
+			        	}else{
+			        		that.listdata=this.$store.state.app.cardlistdata.list
+				            that.total=this.$store.state.app.cardlistdata.total;
+					      	that.pagedata.pageNum=this.$store.state.app.cardlistdata.pageNum;
+					      	that.pagedata.pagesize=this.$store.state.app.cardlistdata.pageSize; 
+			      		}
+			        that.loadTF=false
+		        	}
+
 		        })
 	          console.log(`当前页: ${val}`);
 	        },
@@ -197,15 +204,19 @@
 				var that=this;
 		        this.loadTF=true;
 		        this.$store.dispatch("Getcardlist",this.pagedata).then((res)=>{
-		        	if(res.data.data.list.length==0){
-		        		console.log("23333")
-		        	}else{
-		        		that.listdata=this.$store.state.app.cardlistdata.list
-			            that.total=this.$store.state.app.cardlistdata.total;
-				      	that.pagedata.pageNum=this.$store.state.app.cardlistdata.pageNum;
-				      	that.pagedata.pagesize=this.$store.state.app.cardlistdata.pageSize; 
-				      	that.loadTF=false
-		      		}
+		        	if(res.data.ok==true){
+			        	if(res.data.data.list.length==0){
+			        		console.log("23333")
+			        	}else{
+			        		that.listdata=this.$store.state.app.cardlistdata.list
+				            that.total=this.$store.state.app.cardlistdata.total;
+					      	that.pagedata.pageNum=this.$store.state.app.cardlistdata.pageNum;
+					      	that.pagedata.pagesize=this.$store.state.app.cardlistdata.pageSize; 
+					      	
+			      		}	
+			      	that.loadTF=false
+		        	}
+
 		        })	 			
 	 		},
 	 		Lookcard(index,row){

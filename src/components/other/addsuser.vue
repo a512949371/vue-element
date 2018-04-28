@@ -69,7 +69,8 @@
 		        roleName:''
 			}
 			this.$store.dispatch("Getrole",data).then(()=>{
-				that.rolelist=this.$store.state.app.roledata.list
+				console.log("Getrole",this.$store.state.app.roledata)
+				that.rolelist=this.$store.state.app.roledata
 			})
 		},
 		methods:{

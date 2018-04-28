@@ -70,8 +70,8 @@
 		        roleName:''
 			}
 			this.$store.dispatch("Getrole",data).then(()=>{
-				console.log("Getrole")
-				that.rolelist=this.$store.state.app.roledata.list
+				console.log("Getrole",)
+				that.rolelist=this.$store.state.app.roledata
 			})
 		},
 		watch:{
@@ -96,8 +96,8 @@
 				if(this.userdata.username!=''&&this.userdata.nickname!=''&&this.userdata.telephone!=''&&this.userdata.realname!=''&&this.userdata.rid!=''){
 					if(this.userdata.password==this.userdata.password2){
 						this.$store.dispatch("Editsuserquest",this.userdata).then((res)=>{
-							if(res.data.data.ok==true){
-								that.$message('修改成功');
+							if(res.data.ok==true){
+								that.$message("修改成功");
 								setTimeout(function(){
 									location.reload()
 								},2000)

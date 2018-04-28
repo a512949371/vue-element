@@ -13,11 +13,13 @@
 					<div class="card-box">
 						<div class="dec">商家名称：</div>
 						<div class="input-box">
-							<div class="box-one">
+							<div class="box-one" v-if="vipshop==1">
 								<div style="line-height: 28px;">{{cardinfo.merchantsName}}</div>
 								<div class="btn ml20" v-on:click="Chooseshop">去选择</div>
 							</div>
-							
+							<div class="box-one" v-else>
+								<div style="line-height: 28px;">{{shopname}}</div>
+							</div>
 						</div>
 						
 					</div>
@@ -49,13 +51,15 @@
 						<div class="dec">是否有有效期限<span class="red">*</span></div>
 						<div class="input-box">
 							<el-switch
-							  v-model="cardinfo.isInvalid"
-							  active-value="1"
-  							  inactive-value="0">
+							  v-model="value1"
+							  active-value="0"
+  							  inactive-value="1"
+  							  @change="changeStatusone($event)">
 							</el-switch>
+							{{value1}}
 						</div>
 					</div>
-					<div v-if="cardinfo.isInvalid==1">
+					<div v-if="cardinfo.isInvalid">
 					<div class="card-box" >
 						<div class="dec">有效时间：</div>
 						<div class="input-box">
@@ -89,13 +93,15 @@
 						<div class="dec">是否为零门槛购物<span class="red">*</span></div>
 						<div class="input-box">
 							<el-switch
-							  v-model="cardinfo.isZero"
+							  v-model="value2"
 							  active-value="1"
-  							  inactive-value="0">
+  							  inactive-value="0"
+  							  @change="changeStatustwo($event)">
 							</el-switch>
+							{{value2}}
 						</div>
 					</div>
-					<div class="card-box" v-if="cardinfo.isZero==0">
+					<div class="card-box" v-if="cardinfo.isZero==1">
 						<div class="dec">条件：</div>
 						<div class="input-box">满
 							<input type="text"  v-model="cardinfo.lowest"/>
@@ -140,6 +146,8 @@
 	let Newcardbox={
 		data(){
 			return{
+				value1:false,
+				value2:false,
 				cardinfo:{
 					name:'',	
 					merchantsId:'',
@@ -148,28 +156,49 @@
 					amount:'',
 					rebate:'',
 					chapterTotal:'',
-					isInvalid:'1',
+					isInvalid:0,
 					startTime:'',
 					endTime:'',
-					isZero:'1',
+					isZero:0,
 					lowest:'',
 					storeName:'',
 					storePhone:'',
 					storeAddress:'',
 					useRules:''	
 				},
+				shopname:'',
+				vipshop:''
 			}
 		},
 		created(){
-			this.cardinfo.merchantsId=this.$route.query.id;
-			this.cardinfo.merchantsName=this.$route.query.name;
+			this.cardinfo.merchantsId=this.$route.query.id||'';
+			this.cardinfo.merchantsName=this.$route.query.name||'';
+			this.shopname=sessionStorage.getItem("shopname")
+			this.vipshop=sessionStorage.getItem("shopi")
 		},
 		methods:{
+			changeStatusone(event){
+				if(event==true){
+					this.cardinfo.isInvalid=1
+				}else{
+					this.cardinfo.isInvalid=0
+				}
+				console.log(this.cardinfo.isInvalid,this.cardinfo.isZero)
+			},
+			changeStatustwo(event){
+				if(event==true){
+					this.cardinfo.isZero=1
+				}else{
+					this.cardinfo.isZero=0
+				}
+				console.log(this.cardinfo.isInvalid,this.cardinfo.isZero)
+			},
 			Chooseshop(){
 				this.$router.push("/merchants/merchantslist")
 			},
 			Addtrue(){
 				var that=this;
+				this.cardinfo.merchantsId=this.cardinfo.merchantsId||sessionStorage.getItem("shopid")
 				if(this.cardinfo.type==1){
 					this.cardinfo.rebate='0';
 				}
@@ -190,7 +219,7 @@
 					this.cardinfo.startTime=moment(this.cardinfo.startTime).format("YYYY-MM-DD HH:mm:ss");
 					this.cardinfo.endTime=moment(this.cardinfo.endTime).format("YYYY-MM-DD HH:mm:ss")
 				}
-				if(this.cardinfo.isZero==1){
+				if(this.cardinfo.isZero==0){
 					this.cardinfo.lowest='';
 				}
 				if(this.cardinfo.name!=''&&this.cardinfo.merchantsName!=''&&this.cardinfo.storeName!=''&&this.cardinfo.storePhone!=''&&this.cardinfo.storeAddress!=''&&this.cardinfo.useRules!=''){
@@ -222,7 +251,6 @@
 						this.$message('使用规则不能为空');
 					}
 				}
-				console.log("打断测试")
 			}
 		}
 	}

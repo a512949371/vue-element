@@ -13,11 +13,15 @@
 		</div>
 		<div class="select" v-if="btnauthority==1">
 		 <span class="other">店面:</span>
-		 <el-select v-model="pagedata.storesdata" clearable placeholder="请选择" size="small"  >
-		    <el-option v-for="(value,key) in storeslist" :key="value.nickname" :value="value.nickname">
-		      {{value.nickname}}
-		    </el-option>
-		  </el-select>	
+		 <el-select v-model="pagedata.storeId" clearable placeholder="请选择" size="small"  >
+	    <el-option
+	      v-for="(value,key) in storeslist"
+	      :key="value.id"
+	      :label="value.nickname"
+	      :value="value.id">
+	       {{value.nickname}}
+	    </el-option>
+	  </el-select>	
 		</div>
 		<div class="select">
 			<div class="btn" v-on:click="Parentsearch">搜索</div>
@@ -91,7 +95,7 @@
           pagesize:10,
 		  phone:'',
 		  realName:'',
-		  storesdata:''
+		  storeId:''
 	      },     
 	      storeslist:[],	
 	      paylistdata:[],
@@ -105,14 +109,16 @@
       created(){
       	var that=this;
       	this.loadTF=true;
-      	this.$store.dispatch("Getpaylistquest",this.pagedata).then(()=>{
-      		console.log(this.$store.state.app.paylistdata)
-      		that.paylistdata=this.$store.state.app.paylistdata.list;   
-      		that.btnauthority=this.$store.state.app.paylistdata.orderBy;
-            that.total=this.$store.state.app.paylistdata.total;
-	      	that.pagedata.pageNum=this.$store.state.app.paylistdata.pageNum;
-	      	that.pagedata.pagesize=this.$store.state.app.paylistdata.pageSize;
-	      	that.loadTF=false;
+      	this.$store.dispatch("Getpaylistquest",this.pagedata).then((res)=>{
+      		if(res.data.ok==true){
+	      		that.paylistdata=this.$store.state.app.paylistdata.list;   
+	      		that.btnauthority=this.$store.state.app.paylistdata.orderBy;
+	            that.total=this.$store.state.app.paylistdata.total;
+		      	that.pagedata.pageNum=this.$store.state.app.paylistdata.pageNum;
+		      	that.pagedata.pagesize=this.$store.state.app.paylistdata.pageSize;
+		      	that.loadTF=false;     			
+      		}
+
       	})
       	this.$store.dispatch("Getstoresquest").then(()=>{
       		console.log("222")
@@ -135,12 +141,15 @@
 	         var that=this;
 	         this.loadTF=true;
 	         this.pagedata.pagesize=val;
-	         this.$store.dispatch("Getpaylistquest",this.pagedata).then(()=>{
-	      		that.paylistdata=this.$store.state.app.paylistdata.list;
-	      		that.total=this.$store.state.app.paylistdata.total;
-	      		that.pagedata.pageNum=this.$store.state.app.paylistdata.pageNum;
-	      		that.pagedata.pagesize=this.$store.state.app.paylistdata.pageSize; 
-	      		that.loadTF=false
+	         this.$store.dispatch("Getpaylistquest",this.pagedata).then((res)=>{
+	         	if(res.data.ok==true){
+		      		that.paylistdata=this.$store.state.app.paylistdata.list;
+		      		that.total=this.$store.state.app.paylistdata.total;
+		      		that.pagedata.pageNum=this.$store.state.app.paylistdata.pageNum;
+		      		that.pagedata.pagesize=this.$store.state.app.paylistdata.pageSize; 
+		      		that.loadTF=false	         		
+	         	}
+
 	        })
           console.log('每页 '+this.pagedata.pagesize+' 条');
         },
@@ -149,30 +158,33 @@
 	        this.pagedata.pageNum=val;
 	        this.loadTF=true;
 	        this.$store.dispatch("Getpaylistquest",this.pagedata).then((res)=>{
-	        	console.log(res)
-	        	if(res.data.data.list.length==0){
-	        		console.log("23333")
-	        	}else{
-		        	that.total=this.$store.state.app.paylistdata.total;
-		      		that.pagedata.pageNum=this.$store.state.app.paylistdata.pageNum;
-		      		that.pagedata.pagesize=this.$store.state.app.paylistdata.pageSize;
-		      		that.paylistdata=this.$store.state.app.paylistdata.list;
-		      		that.loadTF=false
+	        	if(res.data.ok==true){
+		        	if(res.data.data.list.length==0){
+		        		console.log("23333")
+		        	}else{
+			        	that.total=this.$store.state.app.paylistdata.total;
+			      		that.pagedata.pageNum=this.$store.state.app.paylistdata.pageNum;
+			      		that.pagedata.pagesize=this.$store.state.app.paylistdata.pageSize;
+			      		that.paylistdata=this.$store.state.app.paylistdata.list;
+			      		
+		        	}
+		        that.loadTF=false
 	        	}
-
-	      		
 	        })
           console.log(`当前页: ${val}`);
         },
 		Parentsearch(){
 			var that =this;
 			this.loadTF=true;
-	        this.$store.dispatch("Getpaylistquest",this.pagedata).then(()=>{
-	        	that.total=this.$store.state.app.paylistdata.total;
-	      		that.pagedata.pageNum=this.$store.state.app.paylistdata.pageNum;
-	      		that.pagedata.pagesize=this.$store.state.app.paylistdata.pageSize;
-	      		that.paylistdata=this.$store.state.app.paylistdata.list;
-	      		that.loadTF=false
+	        this.$store.dispatch("Getpaylistquest",this.pagedata).then((res)=>{
+	        	if(res.data.ok==true){
+		        	that.total=this.$store.state.app.paylistdata.total;
+		      		that.pagedata.pageNum=this.$store.state.app.paylistdata.pageNum;
+		      		that.pagedata.pagesize=this.$store.state.app.paylistdata.pageSize;
+		      		that.paylistdata=this.$store.state.app.paylistdata.list;
+		      		that.loadTF=false	        		
+	        	}
+
 	      		console.log(that.paylistdata)
 	        })			
 		}

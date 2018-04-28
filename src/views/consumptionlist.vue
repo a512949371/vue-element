@@ -13,12 +13,24 @@
 		</div>
 		<div class="select" v-if="btnauthority==1">
 		 <span class="other">店面:</span>
-		 <el-select v-model="pagedata.storesdata" clearable placeholder="请选择" size="small"  >
-		    <el-option
-		      v-for="(value,key) in storeslist"
-		      :key="value.nickname"
-		      :value="value.nickname">
-		      {{value.nickname}}
+		 	 <el-select v-model="pagedata.storeId" clearable placeholder="请选择" size="small"  >
+	    <el-option
+	      v-for="(value,key) in storeslist"
+	      :key="value.id"
+	      :label="value.nickname"
+	      :value="value.id">
+	       {{value.nickname}}
+	    </el-option>
+	  </el-select>	
+		</div>
+		<div class="select" v-if="btnauthority==1" >
+		 <span class="other">类型:</span>
+		 <el-select v-model="pagedata.type" clearable placeholder="请选择" size="small"  >
+		    <el-option label="商家联盟卡消费" value="1">
+		      商家联盟卡消费
+		    </el-option>
+		    <el-option label="会员卡消费" value="2">
+		      会员卡消费
 		    </el-option>
 		  </el-select>	
 		</div>
@@ -45,6 +57,10 @@
 	    <el-table-column 
 	      prop="orderPrice"
 	      label="使用金额">
+	    </el-table-column>
+	    <el-table-column 
+	      prop="chapterName"
+	      label="使用卡包">
 	    </el-table-column>
 	    <el-table-column 
 	      prop="createTime"
@@ -86,7 +102,8 @@
           pagesize:10,
 		  phone:'',
 		  userName:'',
-		  storesdata:''
+		  storeId:'',
+		  type:''
 	      },     
 	      storeslist:[],	
 	      paylistdata:[],
@@ -100,16 +117,19 @@
       created(){
       	var that=this;
       	this.loadTF=true;
-      	this.$store.dispatch("Getconsumptionquest",this.pagedata).then(()=>{
-      		console.log(this.$store.state.app.consumptionlistdata)
-      		that.paylistdata=this.$store.state.app.consumptionlistdata.list;    
-      		that.btnauthority=this.$store.state.app.consumptionlistdata.orderBy;
-      		that.pagedata.pageNum=this.$store.state.app.consumptionlistdata.pageNum;
-      		that.pagedata.pagesize=this.$store.state.app.consumptionlistdata.pageSize;
-      		that.total=this.$store.state.app.consumptionlistdata.total;
-      		that.loadTF=false;
+      	this.$store.dispatch("Getconsumptionquest",this.pagedata).then((res)=>{
+      		if(res.data.ok==true){
+	      		console.log(this.$store.state.app.consumptionlistdata)
+	      		that.paylistdata=this.$store.state.app.consumptionlistdata.list;    
+	      		that.btnauthority=this.$store.state.app.consumptionlistdata.orderBy;
+	      		that.pagedata.pageNum=this.$store.state.app.consumptionlistdata.pageNum;
+	      		that.pagedata.pagesize=this.$store.state.app.consumptionlistdata.pageSize;
+	      		that.total=this.$store.state.app.consumptionlistdata.total;
+	      		that.loadTF=false;      			
+      		}
       	})
       	this.$store.dispatch("Getstoresquest").then(()=>{
+      		console.log("storesdata",this.$store.state.app.storesdata)
       		that.storeslist=this.$store.state.app.storesdata
       	});	
       },
@@ -128,14 +148,14 @@
 	         var that=this;
 	         this.loadTF=true;
 	         this.pagedata.pagesize=val;
-	         this.$store.dispatch("Getconsumptionquest",this.pagedata).then(()=>{
-	        	that.total=this.$store.state.app.consumptionlistdata.total;
-	      		that.pagedata.pageNum=this.$store.state.app.consumptionlistdata.pageNum;
-	      		that.pagedata.pagesize=this.$store.state.app.consumptionlistdata.pageSize;
-	      		that.paylistdata=this.$store.state.app.consumptionlistdata.list;
-	      		that.loadTF=false;
-	      		console.log("2333")
-	      		console.log(that.pagedata.pagesize)
+	         this.$store.dispatch("Getconsumptionquest",this.pagedata).then((res)=>{
+	         	if(res.data.ok==true){
+		        	that.total=this.$store.state.app.consumptionlistdata.total;
+		      		that.pagedata.pageNum=this.$store.state.app.consumptionlistdata.pageNum;
+		      		that.pagedata.pagesize=this.$store.state.app.consumptionlistdata.pageSize;
+		      		that.paylistdata=this.$store.state.app.consumptionlistdata.list;
+		      		that.loadTF=false;	         		
+	         	}
 	        })
           console.log('每页 '+this.pagedata.pagesize+' 条');
         },
@@ -144,30 +164,32 @@
 	        this.loadTF=true;
 	        this.pagedata.pageNum=val;
 	        this.$store.dispatch("Getconsumptionquest",this.pagedata).then((res)=>{
-	        	console.log(res)
-	        	if(res.data.data.list.length==0){
-	        		console.log("23333")
-	        	}else{
-		        	that.total=this.$store.state.app.consumptionlistdata.total;
-		      		that.pagedata.pageNum=this.$store.state.app.consumptionlistdata.pageNum;
-		      		that.pagedata.pagesize=this.$store.state.app.consumptionlistdata.pageSize;
-		      		that.paylistdata=this.$store.state.app.consumptionlistdata.list;
-		      		that.loadTF=false;
-	        	}
-
-	      		
+	        	if(res.data.ok==true){
+		        	if(res.data.data.list.length==0){
+		        		console.log("23333")
+		        	}else{
+			        	that.total=this.$store.state.app.consumptionlistdata.total;
+			      		that.pagedata.pageNum=this.$store.state.app.consumptionlistdata.pageNum;
+			      		that.pagedata.pagesize=this.$store.state.app.consumptionlistdata.pageSize;
+			      		that.paylistdata=this.$store.state.app.consumptionlistdata.list;
+			      		
+		        	}	
+		        that.loadTF=false;
+	        	}	
 	        })
           console.log(`当前页: ${val}`);
         },
 		Parentsearch(){
 			var that =this;
 			this.loadTF=true;
-	        this.$store.dispatch("Getconsumptionquest",this.pagedata).then(()=>{
-	        	that.total=this.$store.state.app.consumptionlistdata.total;
-	      		that.pagedata.pageNum=this.$store.state.app.consumptionlistdata.pageNum;
-	      		that.pagedata.pageSize=this.$store.state.app.consumptionlistdata.pageSize;
-	      		that.paylistdata=this.$store.state.app.consumptionlistdata.list;
-	      		that.loadTF=false;
+	        this.$store.dispatch("Getconsumptionquest",this.pagedata).then((res)=>{
+	        	if(res.data.ok==true){
+		        	that.total=this.$store.state.app.consumptionlistdata.total;
+		      		that.pagedata.pageNum=this.$store.state.app.consumptionlistdata.pageNum;
+		      		that.pagedata.pageSize=this.$store.state.app.consumptionlistdata.pageSize;
+		      		that.paylistdata=this.$store.state.app.consumptionlistdata.list;
+		      		that.loadTF=false;	        		
+	        	}
 	      		console.log(that.paylistdata)
 	        })			
 		}
